@@ -1,1 +1,1 @@
-# docker-health-server
+# health-server

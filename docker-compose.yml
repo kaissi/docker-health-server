@@ -1,0 +1,41 @@
+# Copyright 2018 Marcos Rafael Kaissi Barbosa
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+version: '3.6'
+
+x-vars:
+  var-1: &HEALTH_PORT_PUBLISHED 8081
+
+services:
+  health-server:
+    env_file:
+      - .env
+    build:
+      context: .
+      args:
+        - HEALTH_PORT_TARGET
+        - TZ
+    image: kaissi/health-server:latest
+    ports:
+      - published: *HEALTH_PORT_PUBLISHED
+        target: ${HEALTH_PORT_TARGET}
+        protocol: tcp
+        mode: host
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${HEALTH_PORT_TARGET}/readiness"]
+      interval: 2s
+      timeout: 5s
+      retries: 3
+      start_period: 0m
+    restart: always
